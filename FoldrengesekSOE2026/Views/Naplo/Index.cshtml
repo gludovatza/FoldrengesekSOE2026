@@ -1,0 +1,78 @@
+﻿@model IEnumerable<FoldrengesekSOE2026.Models.Naplo>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<form asp-action="Index" method="get">
+    <p>
+        Filters:
+        <input type="date" name="datum" value="@ViewData["AktualisDatumSzuro"]" placeholder="dátum" />
+        
+        <select name="telepulesid" asp-items="ViewBag.TelepulesID">
+            <option value="0">Minden település</option>
+        </select>
+
+        Magnitúdó:
+        Minimum:
+        <input type="number" name="magMin" value="@ViewData["AktualisMagnitudoMinSzuro"]" placeholder="Manitúdó minimum" step="0.1" />
+        Maximum:
+        <input type="number" name="magMax" value="@ViewData["AktualisMagnitudoMaxSzuro"]" placeholder="Manitúdó maximum" step="0.1" />
+
+        <input type="submit" value="Keresés" class="btn btn-primary" />
+    </p>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Datum)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ido)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Magnitudo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Intenzitas)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Telepules)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Datum)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ido)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Magnitudo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Intenzitas)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Telepules.Nev)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
