@@ -2,6 +2,10 @@
 
 @{
     ViewData["Title"] = "Index";
+
+    int currentPage = (int)ViewData["CurrentPage"]!;
+    int totalPages = (int)ViewData["TotalPages"]!;
+
 }
 
 <h1>Index</h1>
@@ -27,6 +31,54 @@
         <input type="submit" value="Keresés" class="btn btn-primary" />
     </p>
 </form>
+<nav>
+    <ul class="pagination">
+        @if (currentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(currentPage - 1)"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["TelepId"]"
+                       asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]">
+                    Előző
+                </a>
+            </li>
+        }
+
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <li class="page-item @(i == currentPage ? "active" : "")">
+                <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["TelepId"]"
+                       asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]">
+                    @i
+                </a>
+            </li>
+        }
+
+        @if (currentPage < totalPages)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@(currentPage + 1)"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["TelepId"]"
+                       asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]">
+                    Következő
+                </a>
+            </li>
+        }
+    </ul>
+</nav>
 
 <table class="table">
     <thead>

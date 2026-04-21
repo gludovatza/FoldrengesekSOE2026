@@ -20,7 +20,13 @@ namespace FoldrengesekSOE2026.Controllers
         }
 
         // GET: Naplo
-        public async Task<IActionResult> Index(DateTime? datum, int? telepulesid, double? magMin, double? magMax)
+        public async Task<IActionResult> Index(
+            DateTime? datum, 
+            int? telepulesid, 
+            double? magMin, 
+            double? magMax, 
+            int page = 1
+        )
         {
             var foldrengesek = _context.Naplok.Include(n => n.Telepules).AsQueryable();
 
@@ -63,9 +69,21 @@ namespace FoldrengesekSOE2026.Controllers
                 "Nev",
                 telepulesid ?? 0
             );
+            ViewData["TelepId"] = telepulesid;
 
-            return View(await foldrengesek.ToListAsync());
+            int pageSize = 10; // ennyi elem egy oldalon
 
+            int totalCount = await foldrengesek.CountAsync();
+            var items = await foldrengesek
+                .OrderBy(p => p.Datum)   // ⚠️ lapozásnál KÖTELEZŐ rendezni
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewData["CurrentPage"] = page;
+            ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            return View(items);
         }
 
         // GET: Naplo/Details/5
