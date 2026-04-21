@@ -1,0 +1,9 @@
+﻿@model IEnumerable<FoldrengesekSOE2026.ViewModels.Feladat5ViewModel>
+
+<h1>Alig érzékelhető földrengések</h1>
+<ul>
+    @foreach (var item in Model)
+    {
+        <li>@item.Nev: @item.Datum.ToString("yyyy-MM-dd") (intenzitás: @item.Intenzitas)</li>
+    }
+</ul>

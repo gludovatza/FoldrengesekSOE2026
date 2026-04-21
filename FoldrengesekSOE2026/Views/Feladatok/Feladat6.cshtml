@@ -1,0 +1,20 @@
+﻿@model IEnumerable<FoldrengesekSOE2026.ViewModels.Feladat6ViewModel>
+
+<h1>Legtöbb nagyobb földrengést tartalmazó évek</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Év</th>
+            <th>Földrengésszám</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Year</td>
+                <td>@item.Count</td>
+            </tr>
+        }
+    </tbody>
+</table>

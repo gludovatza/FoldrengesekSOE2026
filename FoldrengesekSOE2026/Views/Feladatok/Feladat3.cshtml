@@ -1,0 +1,9 @@
+﻿@model IEnumerable<FoldrengesekSOE2026.ViewModels.Feladat3ViewModel>
+
+<h1>Vármegyei feljegyzett földrengések darabszáma</h1>
+<ul>
+    @foreach (var item in Model)
+    {
+        <li>@item.Varmegye: @item.Count</li>
+    }
+</ul>
