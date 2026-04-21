@@ -6,6 +6,23 @@
     int currentPage = (int)ViewData["CurrentPage"]!;
     int totalPages = (int)ViewData["TotalPages"]!;
 
+    int totalCount = (int)ViewData["TotalCount"]!;
+
+    string ToggleDir(string column)
+    => (ViewData["CurrentSort"]?.ToString() == column &&
+        ViewData["CurrentDir"]?.ToString() == "asc")
+       ? "desc"
+       : "asc";
+
+    string SortIcon(string column)
+    {
+        if (ViewData["CurrentSort"]?.ToString() != column)
+            return "";
+
+        return ViewData["CurrentDir"]?.ToString() == "asc"
+            ? " ▲"
+            : " ▼";
+    }
 }
 
 <h1>Index</h1>
@@ -42,7 +59,9 @@
                        asp-route-datum="@ViewData["AktualisDatumSzuro"]"
                        asp-route-telepulesid="@ViewData["TelepId"]"
                        asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
-                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]">
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]"
+                       asp-route-sort="@ViewData["CurrentSort"]"
+                       asp-route-dir="@ViewData["CurrentDir"]">
                     Előző
                 </a>
             </li>
@@ -57,7 +76,9 @@
                        asp-route-datum="@ViewData["AktualisDatumSzuro"]"
                        asp-route-telepulesid="@ViewData["TelepId"]"
                        asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
-                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]">
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]"
+                       asp-route-sort="@ViewData["CurrentSort"]"
+                       asp-route-dir="@ViewData["CurrentDir"]">
                     @i
                 </a>
             </li>
@@ -72,7 +93,9 @@
                        asp-route-datum="@ViewData["AktualisDatumSzuro"]"
                        asp-route-telepulesid="@ViewData["TelepId"]"
                        asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
-                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]">
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]"
+                       asp-route-sort="@ViewData["CurrentSort"]"
+                       asp-route-dir="@ViewData["CurrentDir"]">
                     Következő
                 </a>
             </li>
@@ -84,19 +107,55 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Datum)
+                <a asp-action="Index"
+                       asp-route-page="@currentPage"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["TelepId"]"
+                       asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]"
+                       asp-route-sort="datum"
+                       asp-route-dir="@ToggleDir("datum")">
+                    @Html.DisplayNameFor(model => model.Datum) @SortIcon("datum")
+                </a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Ido)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Magnitudo)
+                <a asp-action="Index"
+                       asp-route-page="@currentPage"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["TelepId"]"
+                       asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]"
+                       asp-route-sort="magnitudo"
+                       asp-route-dir="@ToggleDir("magnitudo")">
+                    @Html.DisplayNameFor(model => model.Magnitudo) @SortIcon("magnitudo")
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Intenzitas)
+                <a asp-action="Index"
+                       asp-route-page="@currentPage"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["TelepId"]"
+                       asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]"
+                       asp-route-sort="intenzitas"
+                       asp-route-dir="@ToggleDir("intenzitas")">
+                    @Html.DisplayNameFor(model => model.Intenzitas) @SortIcon("intenzitas")
+                </a>
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Telepules)
+                <a asp-action="Index"
+                       asp-route-page="@currentPage"
+                       asp-route-datum="@ViewData["AktualisDatumSzuro"]"
+                       asp-route-telepulesid="@ViewData["TelepId"]"
+                       asp-route-magMin="@ViewData["AktualisMagnitudoMinSzuro"]"
+                       asp-route-magMax="@ViewData["AktualisMagnitudoMaxSzuro"]"
+                       asp-route-sort="telepulesnev"
+                       asp-route-dir="@ToggleDir("telepulesnev")">
+                    @Html.DisplayNameFor(model => model.Telepules!.Nev) @SortIcon("telepulesnev")
+                </a>
             </th>
             <th></th>
         </tr>
@@ -117,7 +176,7 @@
                 @Html.DisplayFor(modelItem => item.Intenzitas)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Telepules.Nev)
+                @Html.DisplayFor(modelItem => item.Telepules!.Nev)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |

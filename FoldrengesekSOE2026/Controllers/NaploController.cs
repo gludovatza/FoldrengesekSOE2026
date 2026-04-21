@@ -25,7 +25,9 @@ namespace FoldrengesekSOE2026.Controllers
             int? telepulesid, 
             double? magMin, 
             double? magMax, 
-            int page = 1
+            int page = 1,
+            string sort = "datum",
+            string dir = "asc"
         )
         {
             var foldrengesek = _context.Naplok.Include(n => n.Telepules).AsQueryable();
@@ -63,25 +65,61 @@ namespace FoldrengesekSOE2026.Controllers
                 ViewData["AktualisMagnitudoMaxSzuro"] = magMax.Value;
             }
 
-            ViewData["TelepulesID"] = new SelectList(
-                _context.Telepulesek,
-                "ID",
-                "Nev",
-                telepulesid ?? 0
-            );
+            // A TelepulesID SelectList tartalmát a szűrés(ek)nek megfelelően határozzuk meg.
+            // Ha volt bármilyen szűrés, akkor a jelenleg rendezett/szűrt naplók településeiből építjük a listát,
+            // különben a teljes település lista kerül a SelectList-be.
+            bool voltSzures = datum.HasValue || telepulesid.HasValue || magMin.HasValue || magMax.HasValue;
+
+            if (voltSzures)
+            {
+                var telepulesekSzurt = await foldrengesek
+                    .Where(n => n.Telepules != null)
+                    .Select(n => new { n.Telepules!.ID, n.Telepules!.Nev })
+                    .Distinct()
+                    .OrderBy(t => t.Nev)
+                    .ToListAsync();
+
+                ViewData["TelepulesID"] = new SelectList(telepulesekSzurt, "ID", "Nev", telepulesid ?? 0);
+            }
+            else
+            {
+                var osszesTelepules = await _context.Telepulesek
+                    .OrderBy(t => t.Nev)
+                    .Select(t => new { t.ID, t.Nev })
+                    .ToListAsync();
+
+                ViewData["TelepulesID"] = new SelectList(osszesTelepules, "ID", "Nev", telepulesid ?? 0);
+            }
             ViewData["TelepId"] = telepulesid;
+
+            foldrengesek = (sort, dir) switch
+            {
+                ("datum", "desc") => foldrengesek.OrderByDescending(p => p.Datum),
+                ("intenzitas", "asc") => foldrengesek.OrderBy(p => p.Intenzitas),
+                ("intenzitas", "desc") => foldrengesek.OrderByDescending(p => p.Intenzitas),
+                ("magnitudo", "asc") => foldrengesek.OrderBy(p => p.Magnitudo),
+                ("magnitudo", "desc") => foldrengesek.OrderByDescending(p => p.Magnitudo),
+                ("telepulesnev", "asc") => foldrengesek.OrderBy(p => p.Telepules!.Nev),
+                ("telepulesnev", "desc") => foldrengesek.OrderByDescending(p => p.Telepules!.Nev),
+                _ => foldrengesek.OrderBy(p => p.Datum)
+            };
+
+            ViewData["CurrentSort"] = sort;
+            ViewData["CurrentDir"] = dir;
 
             int pageSize = 10; // ennyi elem egy oldalon
 
             int totalCount = await foldrengesek.CountAsync();
             var items = await foldrengesek
-                .OrderBy(p => p.Datum)   // ⚠️ lapozásnál KÖTELEZŐ rendezni
+                //.OrderBy(p => p.Datum)   // ⚠️ lapozásnál KÖTELEZŐ rendezni
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
             ViewData["CurrentPage"] = page;
             ViewData["TotalPages"] = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            ViewData["TotalCount"] = totalCount;
 
             return View(items);
         }
