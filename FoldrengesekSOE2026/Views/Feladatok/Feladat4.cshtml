@@ -3,8 +3,16 @@
 <h2>Legnagyobb magnitúdójú esemény</h2>
 
 <ul>
-    <li><strong>Település:</strong> @Model.Nev</li>
-    <li><strong>Dátum:</strong> @Model.Datum.ToString("yyyy-MM-dd")</li>
-    <li><strong>Idő:</strong> @Model.Ido</li>
-    <li><strong>Magnitúdó:</strong> @Model.Magnitudo</li>
+    @if (Model is not null)
+    {
+        <li><strong>Település:</strong> @Model.Nev</li>
+        <li><strong>Dátum:</strong> @Model.Datum.ToString("yyyy-MM-dd")</li>
+        <li><strong>Idő:</strong> @Model.Ido</li>
+        <li><strong>Magnitúdó:</strong> @Model.Magnitudo</li>
+    }
+    else
+    {
+        <li>Nem volt még naplózott esemény.</li>
+    }
 </ul>
+

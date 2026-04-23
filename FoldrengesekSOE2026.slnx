@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="FoldrengesekSOE2026.Tests/FoldrengesekSOE2026.Tests.csproj" />
   <Project Path="FoldrengesekSOE2026/FoldrengesekSOE2026.csproj" />
 </Solution>

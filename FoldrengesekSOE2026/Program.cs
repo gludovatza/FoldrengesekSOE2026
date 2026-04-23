@@ -1,4 +1,5 @@
 using FoldrengesekSOE2026.Data;
+using FoldrengesekSOE2026.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoldrengesekSOE2026
@@ -16,6 +17,8 @@ namespace FoldrengesekSOE2026
                 options.UseSqlServer(
                     builder.Configuration.GetConnectionString("DefaultConnection")
             ));
+
+            builder.Services.AddScoped<ILekerdezesiFeladatok, LekerdezesiFeladatok>();
 
             var app = builder.Build();
 

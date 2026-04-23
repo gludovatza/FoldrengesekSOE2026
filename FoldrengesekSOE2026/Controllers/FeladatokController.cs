@@ -1,5 +1,6 @@
 ﻿using FoldrengesekSOE2026.Data;
 using FoldrengesekSOE2026.Models;
+using FoldrengesekSOE2026.Services;
 using FoldrengesekSOE2026.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
@@ -11,9 +12,12 @@ namespace FoldrengesekSOE2026.Controllers
     {
         private readonly FoldrengesContext _context;
 
-        public FeladatokController(FoldrengesContext context)
+        private readonly ILekerdezesiFeladatok _queries;
+
+        public FeladatokController(FoldrengesContext context, ILekerdezesiFeladatok queries)
         {
             _context = context;
+            _queries = queries;
         }
 
         public IActionResult Index()
@@ -27,10 +31,7 @@ namespace FoldrengesekSOE2026.Controllers
         // ORDER BY nev
         public IActionResult Feladat2()
         {
-            var results = _context.Telepulesek
-                .Where(t => t.Varmegye == "Somogy")
-                .OrderBy(t => t.Nev)
-                .Select(t => t.Nev);
+            var results = _queries.SomogyTelepulesNevek();
 
             return View(results);
         }
@@ -42,14 +43,7 @@ namespace FoldrengesekSOE2026.Controllers
         //ORDER BY COUNT(*) DESC
         public IActionResult Feladat3()
         {
-            var results = _context.Naplok
-                .GroupBy(n => n.Telepules!.Varmegye)
-                .Select(g => new Feladat3ViewModel
-                {
-                    Varmegye = g.Key, // a mező, ami szerint csoportosítva van: Varmegye
-                    Count = g.Count()
-                })
-                .OrderByDescending(t => t.Count);
+            var results = _queries.VarmegyeiRengesSzamok();
 
             return View(results);
         }
@@ -61,16 +55,8 @@ namespace FoldrengesekSOE2026.Controllers
         //LIMIT 1
         public IActionResult Feladat4()
         {
-            var result = _context.Naplok
-                .OrderByDescending(n => n.Magnitudo)
-                .Select(n => new Feladat4ViewModel
-                {
-                    Nev = n.Telepules!.Nev,
-                    Datum = n.Datum,
-                    Ido = n.Ido,
-                    Magnitudo = n.Magnitudo
-                })
-                .FirstOrDefault();
+            var result = _queries.LegnagyobbMagnitudo();
+
             return View(result);
         }
 
@@ -81,15 +67,8 @@ namespace FoldrengesekSOE2026.Controllers
         //ORDER BY datum
         public IActionResult Feladat5()
         {
-            var results = _context.Naplok
-                .Where(n => n.Datum.Year == 2022 && n.Intenzitas >= 2.0 && n.Intenzitas <= 3.0)
-                .OrderBy(n => n.Datum)
-                .Select(n => new Feladat5ViewModel
-                {
-                    Nev = n.Telepules!.Nev,
-                    Datum = n.Datum,
-                    Intenzitas = n.Intenzitas
-                });
+            var results = _queries.AligErzekelheto2022();
+
             return View(results);
         }
 
@@ -101,19 +80,9 @@ namespace FoldrengesekSOE2026.Controllers
         //LIMIT 3
         public IActionResult Feladat6()
         {
-            var results = _context.Naplok
-                .Where(n => n.Intenzitas > 3.0)
-                .GroupBy(n => n.Datum.Year)
-                .Select(g => new Feladat6ViewModel
-                {
-                    Year = g.Key,
-                    Count = g.Count()
-                })
-                .OrderByDescending(t => t.Count)
-                .Take(3);
+            var results = _queries.Top3Ev_3nalNagyobbIntenzitassal();
+
             return View(results);
         }
-
-
     }
 }
