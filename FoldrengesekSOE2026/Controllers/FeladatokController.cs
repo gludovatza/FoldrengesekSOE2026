@@ -2,12 +2,14 @@
 using FoldrengesekSOE2026.Models;
 using FoldrengesekSOE2026.Services;
 using FoldrengesekSOE2026.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FoldrengesekSOE2026.Controllers
 {
+    [Authorize]
     public class FeladatokController : Controller
     {
         private readonly FoldrengesContext _context;
