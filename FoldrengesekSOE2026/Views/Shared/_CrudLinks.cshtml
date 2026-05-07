@@ -1,12 +1,10 @@
-﻿@Model int
-
-@if (User.Identity?.IsAuthenticated == true)
+﻿@if (User.IsInRole("User") || User.IsInRole("Admin"))
 {
     <a asp-action="Edit" asp-route-id="@Model">Edit</a>
     <span> | </span>
 }
 <a asp-action="Details" asp-route-id="@Model">Details</a>
-@if (User.Identity?.IsAuthenticated == true)
+@if (User.IsInRole("Admin"))
 {
     <span> | </span>
     <a asp-action="Delete" asp-route-id="@Model">Delete</a>

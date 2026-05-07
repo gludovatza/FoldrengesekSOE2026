@@ -1,0 +1,50 @@
+﻿@page
+@model AccessDeniedModel
+
+@{
+    ViewData["Title"] = "Hozzáférés megtagadva";
+}
+
+<div class="text-center mt-5">
+
+    <div class="mb-4">
+        <span style="font-size: 5rem;">🔒</span>
+    </div>
+
+    <h1 class="display-5 text-danger">
+        Nincs jogosultságod az oldal eléréséhez
+    </h1>
+
+    <p class="lead mt-4">
+        A megnyitni kívánt funkció csak megfelelő jogosultsággal rendelkező felhasználók számára érhető el.
+    </p>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <p class="text-muted">
+            Bejelentkezve mint:
+            <strong>@User.Identity.Name</strong>
+        </p>
+    }
+    else
+    {
+        <p class="text-muted">
+            Jelenleg nem vagy bejelentkezve.
+        </p>
+    }
+
+    <div class="mt-4">
+        <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-primary me-2">
+            Vissza a főoldalra
+        </a>
+
+        <a asp-controller="Telepules"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
+            Települések megtekintése
+        </a>
+    </div>
+
+</div>

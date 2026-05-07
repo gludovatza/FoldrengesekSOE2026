@@ -7,7 +7,7 @@ namespace FoldrengesekSOE2026
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +22,18 @@ namespace FoldrengesekSOE2026
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(builder.Configuration.GetConnectionString("IdentityConnection")));
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
             {
                 options.SignIn.RequireConfirmedAccount = false;
             })
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+            });
 
             builder.Services.AddRazorPages(); // Identity UI-hoz kell
 
@@ -55,6 +62,8 @@ namespace FoldrengesekSOE2026
                 .WithStaticAssets();
 
             app.MapRazorPages();
+
+            await IdentitySeed.SeedAsync(app.Services);
 
             app.Run();
         }

@@ -99,6 +99,7 @@ namespace FoldrengesekSOE2026.Controllers
         }
 
         // GET: Telepules/Create
+        [Authorize(Roles = "User,Admin")]
         public IActionResult Create()
         {
             return View();
@@ -109,6 +110,7 @@ namespace FoldrengesekSOE2026.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Create([Bind("ID,Nev,Varmegye")] Telepules telepules)
         {
             if (ModelState.IsValid)
@@ -121,6 +123,7 @@ namespace FoldrengesekSOE2026.Controllers
         }
 
         // GET: Telepules/Edit/5
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -141,6 +144,7 @@ namespace FoldrengesekSOE2026.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("ID,Nev,Varmegye")] Telepules telepules)
         {
             if (id != telepules.ID)
@@ -172,6 +176,7 @@ namespace FoldrengesekSOE2026.Controllers
         }
 
         // GET: Telepules/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -192,6 +197,7 @@ namespace FoldrengesekSOE2026.Controllers
         // POST: Telepules/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var telepules = await _context.Telepulesek.FindAsync(id);

@@ -9,7 +9,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace FoldrengesekSOE2026.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "User,Admin")]
     public class FeladatokController : Controller
     {
         private readonly FoldrengesContext _context;
