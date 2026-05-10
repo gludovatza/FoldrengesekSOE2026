@@ -2,6 +2,7 @@ using FoldrengesekSOE2026.Data;
 using FoldrengesekSOE2026.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using FoldrengesekSOE2026.Middleware;
 
 namespace FoldrengesekSOE2026
 {
@@ -39,6 +40,10 @@ namespace FoldrengesekSOE2026
 
             builder.Services.AddScoped<ILekerdezesiFeladatok, LekerdezesiFeladatok>();
 
+            // HttpContextAccessor és AuditLogger 
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<IAuditLogger, AuditLogger>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -64,6 +69,9 @@ namespace FoldrengesekSOE2026
             app.MapRazorPages();
 
             await IdentitySeed.SeedAsync(app.Services);
+
+            // Custom Logging Middleware 
+            app.UseMiddleware<LoggingMiddleware>();
 
             app.Run();
         }
