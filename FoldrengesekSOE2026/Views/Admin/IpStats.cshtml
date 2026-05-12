@@ -1,0 +1,102 @@
+﻿@model IEnumerable<FoldrengesekSOE2026.ViewModels.Admin.IpStatsViewModel>
+
+@{
+    ViewData["Title"] = "IP statisztikák";
+    var days = (int)(ViewData["Days"] ?? 7);
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">IP statisztikák</h1>
+
+    <p>
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">
+            Vissza az admin kezdőlapra
+        </a>
+    </p>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <strong>Időszak kiválasztása</strong>
+        </div>
+
+        <div class="card-body">
+            <form asp-controller="Admin" asp-action="IpStats" method="get">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Vizsgált időszak</label>
+                        <select name="days" class="form-select">
+                            <option value="1" selected="@(days == 1)">Utolsó 1 nap</option>
+                            <option value="7" selected="@(days == 7)">Utolsó 7 nap</option>
+                            <option value="30" selected="@(days == 30)">Utolsó 30 nap</option>
+                            <option value="90" selected="@(days == 90)">Utolsó 90 nap</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Betöltés
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            A kiválasztott időszakban nincs IP-címhez köthető naplóbejegyzés.
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header">
+                <strong>IP-cím alapú összesítés</strong>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-sm table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>IP cím</th>
+                            <th class="text-end">Összes kérés</th>
+                            <th class="text-end">Sikertelen belépés</th>
+                            <th class="text-end">Egyedi felhasználók</th>
+                            <th>Utolsó aktivitás</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr class="@(item.FailedLogins > 0 ? "table-warning" : "")">
+                                <td>
+                                    <code>@item.IpAddress</code>
+                                </td>
+                                <td class="text-end">
+                                    @item.TotalRequests
+                                </td>
+                                <td class="text-end">
+                                    @if (item.FailedLogins > 0)
+                                    {
+                                        <span class="badge bg-danger">@item.FailedLogins</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">0</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    @item.UniqueUsers
+                                </td>
+                                <td>
+                                    @item.LastActivity.ToString("yyyy-MM-dd HH:mm:ss")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

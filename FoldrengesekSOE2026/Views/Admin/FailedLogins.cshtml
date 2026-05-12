@@ -1,0 +1,99 @@
+﻿@model IEnumerable<FoldrengesekSOE2026.ViewModels.Admin.LogViewModel>
+
+@{
+    ViewData["Title"] = "Sikertelen bejelentkezések";
+    var days = (int)(ViewData["Days"] ?? 7);
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Sikertelen bejelentkezések</h1>
+
+    <p>
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">
+            Vissza az admin kezdőlapra
+        </a>
+    </p>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <strong>Időszak kiválasztása</strong>
+        </div>
+
+        <div class="card-body">
+            <form asp-controller="Admin" asp-action="FailedLogins" method="get">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Vizsgált időszak</label>
+                        <select name="days" class="form-select">
+                            <option value="1" selected="@(days == 1)">Utolsó 1 nap</option>
+                            <option value="7" selected="@(days == 7)">Utolsó 7 nap</option>
+                            <option value="30" selected="@(days == 30)">Utolsó 30 nap</option>
+                            <option value="90" selected="@(days == 90)">Utolsó 90 nap</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Betöltés
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-success">
+            A kiválasztott időszakban nem volt sikertelen bejelentkezési esemény.
+        </div>
+    }
+    else
+    {
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <strong>Sikertelen hitelesítési események</strong>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-sm table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Időpont</th>
+                            <th>Felhasználó</th>
+                            <th>Útvonal</th>
+                            <th>Státusz</th>
+                            <th>Üzenet</th>
+                            <th>IP cím</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model)
+                        {
+                            <tr class="table-danger">
+                                <td>
+                                    <small>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</small>
+                                </td>
+                                <td>
+                                    <small>@(log.UserEmail ?? "-")</small>
+                                </td>
+                                <td>
+                                    <small>@log.Path</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger">@log.StatusCode</span>
+                                </td>
+                                <td>
+                                    <small>@(log.Message ?? "-")</small>
+                                </td>
+                                <td>
+                                    <small>@(log.IpAddress ?? "-")</small>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

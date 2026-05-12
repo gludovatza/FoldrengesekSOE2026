@@ -1,0 +1,140 @@
+﻿@model FoldrengesekSOE2026.ViewModels.Admin.UserDetailsViewModel
+
+@{
+    ViewData["Title"] = "Felhasználó részletei";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Felhasználó részletei</h1>
+
+    <p>
+        <a asp-controller="Admin" asp-action="Users" class="btn btn-secondary">
+            Vissza a felhasználókhoz
+        </a>
+    </p>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <strong>Felhasználói adatok</strong>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Felhasználó ID</dt>
+                <dd class="col-sm-9">@Model.User.UserId</dd>
+
+                <dt class="col-sm-3">E-mail cím</dt>
+                <dd class="col-sm-9">@Model.User.Email</dd>
+
+                <dt class="col-sm-3">Felhasználónév</dt>
+                <dd class="col-sm-9">@Model.User.UserName</dd>
+
+                <dt class="col-sm-3">Szerepkörök</dt>
+                <dd class="col-sm-9">
+                    @if (Model.User.Roles.Any())
+                    {
+                        foreach (var role in Model.User.Roles)
+                        {
+                            <span class="badge @(role == "Admin" ? "bg-danger" : "bg-warning text-dark")">
+                                @role
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">Nincs szerepkör</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Összes művelet</h6>
+                    <h2>@Model.Stats.TotalActions</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Sikertelen belépések</h6>
+                    <h2 class="@(Model.Stats.FailedLogins > 0 ? "text-danger" : "")">
+                        @Model.Stats.FailedLogins
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Utolsó aktivitás</h6>
+                    <p class="mb-0">
+                        @(Model.Stats.LastActivity?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Nincs adat")
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <strong>Utolsó 100 log bejegyzés</strong>
+        </div>
+
+        <div class="card-body">
+            @if (!Model.RecentLogs.Any())
+            {
+                <div class="alert alert-info">
+                    Ehhez a felhasználóhoz még nincs naplóbejegyzés.
+                </div>
+            }
+            else
+            {
+                <table class="table table-sm table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Időpont</th>
+                            <th>Metódus</th>
+                            <th>Útvonal</th>
+                            <th>Státusz</th>
+                            <th>Entitás</th>
+                            <th>Művelet</th>
+                            <th>IP cím</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var log in Model.RecentLogs)
+                        {
+                            <tr class="@(log.IsAuthFailure ? "table-danger" : "")">
+                                <td>
+                                    <small>@log.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">@log.HttpMethod</span>
+                                </td>
+                                <td>
+                                    <small>@log.Path</small>
+                                </td>
+                                <td>
+                                    <span class="badge @(log.StatusCode >= 200 && log.StatusCode < 300 ? "bg-success" : "bg-danger")">
+                                        @log.StatusCode
+                                    </span>
+                                </td>
+                                <td>@(log.EntityType ?? "-")</td>
+                                <td>@(log.Action ?? "-")</td>
+                                <td>
+                                    <small>@(log.IpAddress ?? "-")</small>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>

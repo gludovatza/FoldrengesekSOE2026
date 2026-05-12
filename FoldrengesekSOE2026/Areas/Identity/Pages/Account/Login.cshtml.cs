@@ -2,18 +2,20 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using FoldrengesekSOE2026.Data;
+using FoldrengesekSOE2026.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace FoldrengesekSOE2026.Areas.Identity.Pages.Account
 {
@@ -21,11 +23,13 @@ namespace FoldrengesekSOE2026.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly FoldrengesContext _context;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger, FoldrengesContext context)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _context = context;
         }
 
         /// <summary>
@@ -128,6 +132,25 @@ namespace FoldrengesekSOE2026.Areas.Identity.Pages.Account
                 }
                 else
                 {
+                    _context.Logs.Add(new Log
+                    {
+                        Timestamp = DateTime.UtcNow,
+                        UserEmail = Input.Email,
+                        UserId = null,
+                        HttpMethod = HttpContext.Request.Method,
+                        Path = HttpContext.Request.Path,
+                        StatusCode = 401,
+                        Message = "Sikertelen bejelentkezési kísérlet",
+                        LogLevel = "Warning",
+                        IsAuthFailure = true,
+                        IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                        EntityType = "Identity",
+                        EntityId = null,
+                        Action = "LoginFailed"
+                    });
+
+                    await _context.SaveChangesAsync();
+
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                     return Page();
                 }

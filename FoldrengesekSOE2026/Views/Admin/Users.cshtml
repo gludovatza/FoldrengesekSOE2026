@@ -1,0 +1,93 @@
+﻿@model IEnumerable<FoldrengesekSOE2026.ViewModels.Admin.UserActivityViewModel>
+
+@{
+    ViewData["Title"] = "Felhasználók aktivitása";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Felhasználók aktivitása</h1>
+
+    <p>
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">
+            Vissza az admin kezdőlapra
+        </a>
+    </p>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            Jelenleg nincs megjeleníthető felhasználó.
+        </div>
+    }
+    else
+    {
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>E-mail cím</th>
+                    <th>Felhasználónév</th>
+                    <th>Szerepkörök</th>
+                    <th>Utolsó aktivitás</th>
+                    <th>Összes művelet</th>
+                    <th>Sikertelen belépés</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Email</td>
+                        <td>@user.UserName</td>
+                        <td>
+                            @if (user.Roles.Any())
+                            {
+                                foreach (var role in user.Roles)
+                                {
+                                    <span class="badge @(role == "Admin" ? "bg-danger" : "bg-warning text-dark")">
+                                        @role
+                                    </span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted">Nincs szerepkör</span>
+                            }
+                        </td>
+                        <td>
+                            @if (user.LastActivity.HasValue)
+                            {
+                                <span>@user.LastActivity.Value.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                                <br />
+                                <small class="text-muted">@user.LastActivityDescription</small>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Még nincs aktivitás</span>
+                            }
+                        </td>
+                        <td>@user.TotalActions</td>
+                        <td>
+                            @if (user.FailedLoginAttempts > 0)
+                            {
+                                <span class="badge bg-danger">@user.FailedLoginAttempts</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">0</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <a asp-controller="Admin"
+                                   asp-action="UserDetails"
+                                   asp-route-id="@user.UserId"
+                                   class="btn btn-sm btn-primary">
+                                Részletek
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

@@ -1,0 +1,102 @@
+﻿@model FoldrengesekSOE2026.ViewModels.Admin.AdminStatsViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Összes felhasználó</h5>
+                    <h2>@Model.TotalUsers</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Aktív ma</h5>
+                    <h2>@Model.ActiveUsersToday</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Összes log</h5>
+                    <h2>@Model.TotalLogs</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">Sikertelen belépés ma</h5>
+                    <h2>@Model.FailedLoginAttemptsToday</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.TopActions.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header">
+                <strong>Top 10 művelet</strong>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>Entitás típusa</th>
+                            <th>Művelet</th>
+                            <th class="text-end">Darabszám</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.TopActions)
+                        {
+                            <tr>
+                                <td>@item.EntityType</td>
+                                <td>@item.Action</td>
+                                <td class="text-end">@item.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header">
+            <strong>Gyors hivatkozások</strong>
+        </div>
+
+        <div class="list-group list-group-flush">
+            <a asp-controller="Admin" asp-action="Users" class="list-group-item list-group-item-action">
+                Felhasználók aktivitása
+            </a>
+
+            <a asp-controller="Admin" asp-action="Logs" class="list-group-item list-group-item-action">
+                Logok böngészése
+            </a>
+
+            <a asp-controller="Admin" asp-action="FailedLogins" class="list-group-item list-group-item-action">
+                Sikertelen bejelentkezések
+            </a>
+
+            <a asp-controller="Admin" asp-action="IpStats" class="list-group-item list-group-item-action">
+                IP statisztikák
+            </a>
+        </div>
+    </div>
+</div>
